@@ -12,8 +12,8 @@ or use the Chat Icon on [https://www.agilicus.com/](https://www.agilicus.com).
 Some use the API directly, others use the [Python SDK](https://pypi.org/project/agilicus/)
 or the [Angular SDK](https://www.npmjs.com/package/@agilicus/angular).
 
-- angular
-- dotnet
-- php
-- python
-- react
+- [angular](./angular/README.md) -- Angular TypeScript SDK examples
+- [dotnet](./dotnet/README.md) -- Examples using Microsoft dotnetcore
+- [php](./php/README.md) -- Examples using PHP
+- [python](./python/README.md) -- Examples using Python
+- [react](./react/README.md) -- Examples using React
