@@ -1,0 +1,42 @@
+---
+stages:
+  - lint
+
+pre-commit:
+  stage: lint
+  cache:
+    paths:
+      - .pre-commit/
+    key: "global"
+  image: cr.agilicus.com/corp-tools/build-containers/python:3.10
+  script: |
+    export XDG_CACHE_HOME=$PWD/.pre-commit
+    export PIP_CACHE_DIR=$PWD/.pre-commit
+    export POETRY_CACHE_DIR=$PWD/.pre-commit
+    mkdir -p $PWD/.pre-commit
+
+    echo "Will use $GITLAB_USER_LOGIN to get pre-commit hooks"
+    sed -i -e "s?git@git.agilicus.com:?https://${GITLAB_USER_LOGIN}:${CI_JOB_TOKEN}@git.agilicus.com/?" .pre-commit-config.yaml
+
+    set +e
+    pre-commit install --install-hooks
+    if [ $? != 0 ]
+    then
+        # I'm really not sure what happens, the cache has the file, we complain there is no file
+        # flush and retry, 1 time, then fall through
+        2>&1 echo "Error: cache might be corrupt on pre-commit, flush and retry"
+        rm -rf .pre-commit
+        pre-commit install --install-hooks
+    fi
+    if [ $? != 0 ]
+    then
+        echo "Will comment out git@agilicus"
+        find .pre-commit
+        awk 'BEGIN { prt=1} /repo/ { prt=1} /https:.*git.agilicus.com/ { prt=0 } { if (prt) print $0; }' < .pre-commit-config.yaml > .pre-commit-config.yaml.
+        mv .pre-commit-config.yaml. .pre-commit-config.yaml
+        set -e
+        pre-commit install --install-hooks
+    fi
+    pre-commit run --all-file
+  except:
+    - tags
