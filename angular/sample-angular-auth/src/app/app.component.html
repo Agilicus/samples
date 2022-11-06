@@ -1,0 +1,95 @@
+<div class="buttons-container">
+  <img alt="Agilicus Logo" src="{{bannerImage}}" width="300"><br>
+
+  <button *ngIf="user$ | async" type="button" mat-raised-button color="warn" class="logout-button"
+    (click)="onLogoutClick()" matTooltip="Click to logout" attr.aria-label="A button for logging out">
+    Logout
+  </button>
+
+  <button *ngIf="(user$ | async) == (false || null || undefined)" type="button" mat-raised-button color="primary"
+    class="login-button" (click)="onLoginClick()" matTooltip="Click to login" attr.aria-label="A button for logging in">
+    Login
+  </button>
+  <div *ngIf="(user$ | async) == (false || null || undefined)">
+    <hr>
+    During your sign-in you will be asked to prove your Identity from a set
+    of "Identity Providers" (e.g. Google, Apple, Microsoft).
+    <br>
+    This uses a protocol called OpenID Connect.
+    <br>No information is shared to this system other than
+    your name & email (called 'profile'). No permissions are granted.
+    <br>
+  </div>
+
+</div>
+
+<div class="app-container" *ngIf="user$ | async as user">
+  <h2>Decoded Information</h2>
+
+  <form class="user-form">
+    <mat-form-field class="user-form-full-width">
+      <input matInput [readonly]="true" placeholder="First Name" value="{{ user.first_name }}" />
+    </mat-form-field>
+
+    <mat-form-field class="user-form-full-width">
+      <input matInput [readonly]="true" placeholder="Last Name" value="{{ user.last_name }}" />
+    </mat-form-field>
+
+    <mat-form-field class="user-form-full-width">
+      <input matInput [readonly]="true" placeholder="ID Provider" value="{{ user.provider }}" />
+    </mat-form-field>
+    <!--
+    <mat-tab-group>
+      <mat-tab label="TabHeader1"></mat-tab>
+      <mat-tab label="TabTabHeader2"></mat-tab>
+    </mat-tab-group>
+  -->
+
+    <mat-form-field class="user-form-full-width">
+      <input matInput [readonly]="true" placeholder="Email" value="{{ user.email }}" />
+    </mat-form-field>
+
+    <mat-form-field class="user-form-full-width">
+      <input matInput [readonly]="true" placeholder="User ID" value="{{ user.id }}" />
+    </mat-form-field>
+  </form>
+
+  <h2>Raw detail information</h2>
+
+  <mat-accordion>
+
+    <mat-expansion-panel hideToggle>
+      <mat-expansion-panel-header>
+        <mat-panel-title> User Roles</mat-panel-title>
+
+
+      </mat-expansion-panel-header>
+      <ngx-json-viewer [json]="user.roles"></ngx-json-viewer>
+
+    </mat-expansion-panel>
+
+    <mat-expansion-panel hideToggle>
+      <mat-expansion-panel-header>
+
+        <mat-panel-title>Raw User Record</mat-panel-title>
+      </mat-expansion-panel-header>
+      <ngx-json-viewer [json]="user"></ngx-json-viewer>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel hideToggle>
+      <mat-expansion-panel-header>
+        Raw Access Token
+      </mat-expansion-panel-header>
+      <p>This should be placed on all requests to your backend service.</p>
+      <ngx-json-viewer [json]="getAccessToken()"></ngx-json-viewer>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel hideToggle>
+      <mat-expansion-panel-header>Raw ID Token</mat-expansion-panel-header>
+      <p>Generally this is never used.</p>
+      <ngx-json-viewer [json]="getIdToken()"></ngx-json-viewer>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
+</div>

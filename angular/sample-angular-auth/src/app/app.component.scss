@@ -1,0 +1,30 @@
+.app-container {
+  min-width: 100px;
+  max-width: 800px;
+  width: 90%;
+  margin: auto;
+  padding: 20px;
+}
+
+.buttons-container {
+  width: 100%;
+  text-align: center;
+  padding-top: 40px;
+}
+
+.logout-button {
+  margin-right: 5px;
+}
+
+.user-form {
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.user-form-full-width {
+  width: 100%;
+}
+
+p {
+  word-wrap: break-word;
+}

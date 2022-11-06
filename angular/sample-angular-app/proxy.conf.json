@@ -1,0 +1,12 @@
+{
+    "/getversion": {
+        "target": "http://localhost:5000",
+        "changeOrigin": true,
+        "secure": false
+    },
+    "/business": {
+        "target": "http://localhost:5000",
+        "changeOrigin": false,
+        "secure": false
+    }
+}

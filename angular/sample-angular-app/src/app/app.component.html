@@ -1,0 +1,27 @@
+<body>
+
+  <div class="header">
+    <a routerLink="" class="logo"><img class="branding" alt="logo" [src]="logo" height="48px" />egov.city</a>
+    <h1>Business List</h1>
+    <div class="header-right">
+      <button class="nav-link" (click)="login()">Login</button>
+      <button class="nav-link" (click)="logoff()">Logout</button>
+          <a routerLink="biz/create" class="nav-link" routerLinkActive="router-link-active">Create Business</a>
+          <a routerLink="biz" class="nav-link" routerLinkActive="router-link-active">View Business</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+  <hr>
+  <div class="whoami" border-style="dotted" border="2px">
+    <ul>
+      <li>First: {{first}}</li>
+      <li>Last: {{last}}</li>
+      <li>Email: {{email}}</li>
+      <li>Provider: {{provider}}</li>
+      <li>Role: {{role}}</li>
+    </ul>
+  </div>
+</body>

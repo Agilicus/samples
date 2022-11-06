@@ -1,0 +1,24 @@
+---
+variables:
+  DOCKER_DRIVER: overlay2
+  PORT: "2375"
+  SMOKE_URI: /
+  SMOKE_EXPECT: "<title>Sample Angular Authentication</title>"
+
+stages:
+  - lint
+  - build
+  - smoke
+  - autorel
+
+include:
+  - project: tooling/pipelines
+    ref: master
+    file: lint-conform.yml
+  - project: tooling/pipelines
+    ref: master
+    file: container-release.yml
+  - project: tooling/pipelines
+    ref: master
+    file: smoke.yml
+

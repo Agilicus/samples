@@ -1,0 +1,43 @@
+---
+stages:
+  - lint
+  - autorel
+  - build
+
+lint:
+  stage: lint
+  image: cr.agilicus.com/corp-tools/build-containers/conform
+  script: |
+    [ -n "$CI_MERGE_REQUEST_ID" ] && /usr/local/bin/conform enforce || true
+
+autorel:
+  stage: autorel
+  image: cr.agilicus.com/corp-tools/build-containers/release
+  script: |
+    if [ -n "$CI_COMMIT_TAG" ]
+    then
+      echo "Skip autorel, CI_COMMIT_TAG=$CI_COMMIT_TAG is present"
+    else
+      ssh-key-from-env
+      standard-version
+      echo "Tags..."
+      git tag
+      git push -v --follow-tags -u origin HEAD:master
+    fi
+  only:
+    - master
+  except:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /^chore\(release\)/
+
+
+build:
+  stage: build
+  image: cr.agilicus.com/corp-tools/docker-compose
+  services:
+    - name: docker:dind
+  script: |
+    std-build-tag-push
+
