@@ -1,0 +1,9 @@
+- name: Create Customer 
+  sample_customer:
+    auth_doc: '{{ auth_doc }}'
+    name: '{{ customer_name }}'
+    customer_config: '{{ customer_config }}'
+  register: customer
+- name: debug
+  debug:
+    var: customer
