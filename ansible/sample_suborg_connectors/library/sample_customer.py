@@ -13,7 +13,7 @@ DOCUMENTATION = r'''
    - creates network services
    - creates forwarders
 ---
-module: agilicus
+module: sample_customer
 
 '''
 
