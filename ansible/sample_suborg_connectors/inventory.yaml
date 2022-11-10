@@ -1,0 +1,13 @@
+all:
+  children:
+    connectors:
+      hosts:
+        192.168.122.36:
+    forwarders:
+      hosts:
+        192.168.122.213:
+      vars:
+        forwarding_connectors:
+          - 192.168.122.36
+        bind_address: localhost
+        port_offset: 1000

@@ -6,11 +6,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 
- Sample Customer Creator
+ Create a connector authentication document.
 
-   - creates a sub organisation for the customer based on input name
 ---
-module: sample_customer
+module: connector_auth_doc
 
 '''
 
@@ -31,11 +30,33 @@ def load_yaml(auth_doc):
         return yaml.safe_load(stream)
 
 
+def get_org(api, parent_org_id, org_name):
+    result = api.organisations.list_orgs(
+        org_id=parent_org_id,
+        list_children=True,
+    )
+    for org in result.orgs:
+        if org.get("organisation") == org_name:
+            return org
+    return None
+
+
+def get_connector(api, org_id, connector_name):
+    result = api.connectors.list_connector(
+        org_id=org_id,
+        name=connector_name,
+    )
+    if len(result["connectors"]) != 1:
+        return None
+    return result["connectors"][0]
+
+
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         auth_doc=dict(type='str', required=True),
-        name=dict(type='str', required=True),
+        customer=dict(type='str', required=True),
+        connector_name=dict(type='str', required=True),
     )
 
     # seed the result dict in the object
@@ -64,8 +85,9 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    name = module.params['name']
+    name = module.params['customer']
     auth_doc = module.params['auth_doc']
+    connector_name = module.params['connector_name']
 
     auth_doc_obj = load_yaml(auth_doc)
     issuer = auth_doc_obj["spec"]["auth_issuer_url"]
@@ -81,20 +103,28 @@ def run_module():
         cacert=cacert,
     )
 
-    parent = api.organisations.get_org(parent_org_id)
+    org = get_org(api, parent_org_id, name)
+    if not org:
+        module.fail_json(msg=f'failed to find org {name}')
 
-    suborg = agilicus.Organisation(
-        organisation=name,
-        subdomain=f"{name}.{parent['subdomain']}",
+    connector = get_connector(api, org["id"], connector_name)
+    if not connector:
+        module.fail_json(msg=f'failed to find connector {connector_name}')
+
+    if not connector["status"].get("service_account_id"):
+        module.fail_json(msg='connector missing service account')
+
+    spec = agilicus.AuthenticationDocumentSpec(
+        auth_issuer_url=issuer,
+        user_id=connector["status"]["service_account_id"],
+        org_id=org["id"],
     )
-    result = agilicus.create_or_update(
-        suborg,
-        lambda obj : api.organisations.create_sub_org(parent_org_id, obj),
-    )
+    model = agilicus.AuthenticationDocument(spec=spec)
+    result = api.tokens.create_authentication_document(model).to_dict()
 
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
-    module.exit_json(**result[0])
+    module.exit_json(**result)
 
 
 def main():
