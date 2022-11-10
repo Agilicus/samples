@@ -4,16 +4,15 @@
     dest: /tmp/authdoc.json
     decrypt: yes
     mode: '0400'
-- name: copy customer config
-  copy:
-    src: customer_config.yaml
-    dest: /tmp/customer_config.yaml
-    mode: '0400'
+- name: install agilicus sdk
+  ansible.builtin.pip:
+    name:
+      - agilicus
+    extra_args: --upgrade
 - name: Create Customer 
   sample_customer:
     auth_doc: /tmp/authdoc.json
     name: '{{ customer_name }}'
-    customer_config: /tmp/customer_config.yaml
   register: customer
 - name: debug
   debug:
@@ -22,7 +21,3 @@
   file:
     state: absent
     path: /tmp/authdoc.json
-- name: delete customer config
-  file:
-    state: absent
-    path: /tmp/customer_config.yaml

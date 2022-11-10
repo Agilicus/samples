@@ -1,3 +1,15 @@
-- hosts: servers
+- hosts: localhost 
   roles:
     - customer
+- hosts: connectors
+  vars:
+    networks:
+      - name: test1
+        hostname: localhost
+        port: 80
+  roles:
+    - connector
+- hosts: forwarders
+  vars:
+  roles:
+    - connector
