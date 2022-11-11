@@ -13,6 +13,7 @@
   sample_customer:
     auth_doc: /tmp/authdoc.json
     name: '{{ customer_name }}'
+    admin_users: '{{ admin_users | default | to_json }}'
   register: customer
 - name: debug
   debug:

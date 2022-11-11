@@ -1,5 +1,9 @@
 - hosts: localhost 
+  vars:
+    admin_users:
+      - mike@agilicus.com
   roles:
+    - deps
     - customer
 - hosts: connectors
   vars:
@@ -9,7 +13,8 @@
         port: 80
   roles:
     - connector
+    - install_connector
 - hosts: forwarders
-  vars:
   roles:
-    - connector
+    - forwarder
+    - install_connector

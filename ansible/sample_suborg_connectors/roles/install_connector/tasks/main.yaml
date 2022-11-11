@@ -1,0 +1,42 @@
+- name: auth_doc
+  copy:
+    src: authdoc.json
+    dest: /tmp/authdoc.json
+    decrypt: yes
+    mode: '0400'
+  delegate_to: 127.0.0.1
+- name: create connector authentication document
+  connector_auth_doc:
+    auth_doc: /tmp/authdoc.json
+    customer: "{{ customer_name }}"
+    connector_name: "{{ inventory_hostname }}"
+  delegate_to: 127.0.0.1
+  register: auth_doc
+- name: copy authdoc to remote
+  copy:
+    content: "{{ auth_doc }}"
+    dest: /tmp/connector_auth_doc.json
+    mode: '0400'
+- name: fetch agilicus
+  ansible.builtin.get_url:
+    url: https://agilicus.com/www/releases/secure-agent/latest/agilicus-agent
+    mode: '0770'
+    dest: /tmp
+- name: retrieve connector
+  get_connector:
+    auth_doc: /tmp/authdoc.json
+    customer: "{{ customer_name }}"
+    connector_name: "{{ inventory_hostname }}"
+  delegate_to: 127.0.0.1
+  register: connector
+- name: install agilicus connector
+  ansible.builtin.command:
+    cmd: /tmp/agilicus-agent client --install --authentication-document /tmp/connector_auth_doc.json --agent-id "{{connector['metadata']['id']}}"
+  register: install_stdout 
+- name: debug
+  debug:
+    var: install_stdout
+- name: delete auth doc
+  file:
+    state: absent
+    dest: /tmp/connector_auth_doc.json
