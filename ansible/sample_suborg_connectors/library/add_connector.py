@@ -158,7 +158,6 @@ def run_module():
             if not conn:
                 module.fail_json(msg=f'failed to find connector {dest_connector}')
 
-            connector_name = conn["spec"]["name"]
             for network in conn["status"]["application_services"]:
                 kwargs = {}
                 kwargs["bind_address"] = module.params.get("forwarder_bind_address")
