@@ -1,4 +1,7 @@
 - hosts: localhost 
+  vars:
+    admin_users:
+      - mike@agilicus.com
   roles:
     - customer
 - hosts: connectors
