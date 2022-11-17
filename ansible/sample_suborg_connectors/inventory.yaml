@@ -3,9 +3,18 @@ localhost
 
 [onprem]
 192.168.122.36
+[onprem:vars]
+#override default locations for services
+#prometheus_host=
+#ignition_host=
+#kafka_host=
 
 [cloud]
 192.168.122.213
+[cloud:vars]
+#override default locations for services
+#influx_host=
+#postgres_host=
 
 [all:vars]
 # define which host the agilicus_sdk is located

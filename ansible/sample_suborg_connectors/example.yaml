@@ -10,13 +10,13 @@
   vars:
     networks:
       - name: prometheus
-        hostname: "{{ inventory_hostname }}"
+        hostname: "{{ prometheus_host | default(inventory_hostname) }}"
         port: 9090
       - name: ignition
-        hostname: "{{ inventory_hostname }}"
+        hostname: "{{ ignition_host | default(inventory_hostname) }}"
         port: 8080
       - name: kafka
-        hostname: "{{ inventory_hostname }}"
+        hostname: "{{ kafka_host | default(inventory_hostname) }}"
         port: 9092
   roles:
     - connector
@@ -25,10 +25,10 @@
   vars:
     networks:
       - name: influx
-        hostname: "{{ inventory_hostname }}"
+        hostname: "{{ influx_host | default(inventory_hostname) }}"
         port: 8086
       - name: postgres
-        hostname: "{{ inventory_hostname }}"
+        hostname: "{{ postgres_host | default(inventory_hostname) }}"
         port: 5432
   roles:
     - connector
