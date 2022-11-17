@@ -172,7 +172,7 @@ def run_module():
                     port_offset = 0
                 spec = agilicus.ServiceForwarderSpec(
                     org_id=org["id"],
-                    name=f"{network['name']}",
+                    name=f"forwarder-{network['name']}",
                     port=network["port"] + int(port_offset),
                     connector_id=connector["metadata"]["id"],
                     application_service_id=network["id"],
