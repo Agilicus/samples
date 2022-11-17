@@ -1,5 +1,7 @@
-- name: install agilicus sdk
+- name: install agilicus dependencies
   ansible.builtin.pip:
     name:
+      - ansible
       - agilicus
+      - retry
     extra_args: --upgrade

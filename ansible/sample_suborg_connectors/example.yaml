@@ -5,16 +5,50 @@
   roles:
     - deps
     - customer
-- hosts: connectors
+- name: build cloud connectors
+  hosts: cloud
   vars:
     networks:
-      - name: test1
-        hostname: localhost
-        port: 80
+      - name: prometheus
+        hostname: "{{ inventory_hostname }}"
+        port: 9090
+      - name: ignition
+        hostname: "{{ inventory_hostname }}"
+        port: 8080
+      - name: kafka
+        hostname: "{{ inventory_hostname }}"
+        port: 9092
   roles:
     - connector
-    - install_connector
-- hosts: forwarders
+- name: build onprem connectors
+  hosts: onprem
+  vars:
+    networks:
+      - name: influx
+        hostname: "{{ inventory_hostname }}"
+        port: 8086
+      - name: postgres
+        hostname: "{{ inventory_hostname }}"
+        port: 5432
+  roles:
+    - connector
+- name: setup forwarding from cloud -> onprem
+  hosts: cloud 
+  vars:
+    forwarding_connectors: "{{ groups['onprem'] }}"
+    bind_address: 0.0.0.0
+    port_offset: 10000
   roles:
     - forwarder
+- name: setup forwarding from onprem -> cloud
+  hosts: onprem
+  vars:
+    forwarding_connectors: "{{ groups['cloud'] }}"
+    bind_address: 0.0.0.0
+    port_offset: 10000
+  roles:
+    - forwarder
+- name: install connectors
+  hosts: onprem, cloud
+  roles:
     - install_connector

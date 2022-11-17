@@ -9,24 +9,22 @@ This provides a network authorization mechansim without a VPN.
 
 ### inventory.yaml
 
-Provides the inventory for where connectors and forwarders are installed (ie. hosts). The forwarders have their
-own vars, such that it provides the definition of how a forwarder (connector) should forward to a particular connector.
-A forwarder also provides variables for bind_address and port_offset.
+Provides the inventory for where connectors and forwarders are installed (ie. hosts).
+
+Two groups are defined, 'cloud' and 'onprem'.  Connectors are installed in each host for those groups, and then
+forwarders are setup from cloud -> onprem and onprem -> cloud, based on the playbook configuration.
 
 ### example.yaml
 
-The playbook goes through 3 stages.
+The playbook goes through the following:
 
-The first stage creates the 'customer'. This operates on the localhost, since it communicates with the Agilicus cloud
+1. The suborg or 'customer' is creatd. This operates on the localhost, since it communicates with the Agilicus cloud
 via the Agilicus SDK.
-
-The second stage creates all connectors.  Variables provided for the connectors define what networks should be created and
+2. Connectors are created on each cloud and onprem. Variables provided for the connectors define what networks should be created and
 bound to the connector. Note this creates both the connector object in Agilicus, as well as installs the connector on the remote
 machine.
-
-The third stage creates forwarders, and which connector should be forwarded. The forwarder will read the connector to forward
-to and will forward all networks that are bound on that connector. The port_offset parameter provided by the inventory provides
-what port offset should be applied on the local forwarder with respect to the destination network.
+3. Forwaders are created between cloud -> onprem, and onprem -> cloud
+4. connectors are installed on all hosts in onprem and cloud
 
 ## Authentication for automation
 
