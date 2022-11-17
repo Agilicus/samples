@@ -24,6 +24,7 @@ import agilicus
 import yaml
 import os
 import json
+from retry import retry
 
 
 def load_yaml(auth_doc):
@@ -31,6 +32,7 @@ def load_yaml(auth_doc):
         return yaml.safe_load(stream)
 
 
+@retry(tries=3, delay=2)
 def get_org(api, parent_org_id, org_name):
     result = api.organisations.list_orgs(
         org_id=parent_org_id,
@@ -42,6 +44,7 @@ def get_org(api, parent_org_id, org_name):
     return None
 
 
+@retry(tries=3, delay=2)
 def get_connector(api, org_id, connector_name):
     result = api.connectors.list_connector(
         org_id=org_id,

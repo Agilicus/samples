@@ -25,8 +25,10 @@ import agilicus
 import yaml
 import os
 import json
+from retry import retry
 
 
+@retry(tries=3, delay=2)
 def get_user(api, org_id, user_type=None, email=None, search_params=None):
     kwargs = {}
     if user_type:
