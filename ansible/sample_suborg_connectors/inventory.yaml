@@ -1,5 +1,12 @@
+[agilicus_sdk]
+localhost
+
 [onprem]
 192.168.122.36
 
 [cloud]
 192.168.122.213
+
+[all:vars]
+# define which host the agilicus_sdk is located
+agilicus_sdk=localhost

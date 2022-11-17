@@ -4,14 +4,14 @@
     dest: /tmp/authdoc.json
     decrypt: yes
     mode: '0400'
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"
 - name: create connector
   add_connector:
     auth_doc: /tmp/authdoc.json
     customer: "{{ customer_name }}"
     connector_name: "{{ inventory_hostname }}"
     networks: "{{ networks | to_json }}"
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"
   register: connector
 - name: debug
   debug:
@@ -20,4 +20,4 @@
   file:
     state: absent
     path: /tmp/authdoc.json
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"
