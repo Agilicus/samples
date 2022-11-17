@@ -4,7 +4,7 @@
     dest: /tmp/authdoc.json
     decrypt: yes
     mode: '0400'
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"
 - name: create forwarder 
   add_connector:
     auth_doc: /tmp/authdoc.json
@@ -13,7 +13,7 @@
     forwarding_connectors: "{{ forwarding_connectors | to_json }}"
     port_offset: "{{ port_offset | default(0) }}"
     forwarder_bind_address: "{{ bind_address }}"
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"
   register: connector
 - name: debug
   debug:
@@ -22,4 +22,4 @@
   file:
     state: absent
     path: /tmp/authdoc.json
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"

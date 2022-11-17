@@ -16,15 +16,13 @@ forwarders are setup from cloud -> onprem and onprem -> cloud, based on the play
 
 ### example.yaml
 
-The playbook goes through the following:
+The playbook invokes the following:
 
-1. The suborg or 'customer' is creatd. This operates on the localhost, since it communicates with the Agilicus cloud
-via the Agilicus SDK.
-2. Connectors are created on each cloud and onprem. Variables provided for the connectors define what networks should be created and
-bound to the connector. Note this creates both the connector object in Agilicus, as well as installs the connector on the remote
-machine.
-3. Forwaders are created between cloud -> onprem, and onprem -> cloud
-4. connectors are installed on all hosts in onprem and cloud
+1. Python dependencies are installed on the ansible host, defined in inventory.
+2. The suborg is created, also called customer in this sample.
+3. Connectors are created for each host in the onprem and cloud groups. Networks are configured for each group, which tell the builder what networks will be created on that connector host.
+4. Forwarders are created between cloud -> onprem, and onprem -> cloud.
+5. Connectors are installed on all hosts in onprem and cloud groups.
 
 ## Authentication for automation
 
@@ -36,7 +34,7 @@ An authentication document is required, with the approriate permissions. This ca
     
 2.  Now via agilicus-cli, list the service accounts
 	```
-	agilicus-cli --issuer <> list-service-accounts
+	agilicus-cli --issuer https://auth.<org domain> list-service-accounts
 	```
     find the service account created in step 1, note the
     user 'id' for the service account.  Note that this is not the id of the service account,
@@ -44,7 +42,7 @@ An authentication document is required, with the approriate permissions. This ca
     
 3.  Create an authentication document for the service account:
 	```
-	agilicus-cli --issuer <> add-authentication-document --user-id <user_id_from_step_2> --auth-issuer-url <issuer> --output authdoc.json
+	agilicus-cli --issuer https://auth.<org domain> add-authentication-document --user-id <user_id_from_step_2> --auth-issuer-url https://auth.<org domain> --outfile authdoc.json
 	```
 
 4. Encrypt the authdoc.json into ansible-vault:

@@ -1,4 +1,4 @@
-- hosts: localhost 
+- hosts: agilicus_sdk
   vars:
     admin_users:
       - mike@agilicus.com

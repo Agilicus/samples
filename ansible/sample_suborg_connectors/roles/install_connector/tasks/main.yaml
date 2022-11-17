@@ -4,13 +4,13 @@
     dest: /tmp/authdoc.json
     decrypt: yes
     mode: '0400'
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"
 - name: create connector authentication document
   connector_auth_doc:
     auth_doc: /tmp/authdoc.json
     customer: "{{ customer_name }}"
     connector_name: "{{ inventory_hostname }}"
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"
   register: auth_doc
 - name: copy authdoc to remote
   copy:
@@ -27,7 +27,7 @@
     auth_doc: /tmp/authdoc.json
     customer: "{{ customer_name }}"
     connector_name: "{{ inventory_hostname }}"
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ agilicus_sdk }}"
   register: connector
 - name: install agilicus connector
   ansible.builtin.command:
