@@ -16,6 +16,49 @@ forwarders are setup from cloud -> onprem and onprem -> cloud, based on the play
 
 ### example.yaml
 
+A high level view of the services and networks that are involved:
+
+```plantuml
+@startuml
+nwdiag {
+    network cloud_net {
+      influx [shape=database];
+      postgres [shape=database];
+      cloud_connector [shape=node];
+    }
+    group {
+        color = "palegreen";
+        description = "forwarding to:\n-prometheus\n-ignition\n-kafka";
+        cloud_connector;
+    }
+
+    network cloud_dmz {
+      cloud_connector;
+    }
+    
+    internet [shape = cloud];
+    
+    network onprem_dmz {
+      onprem_connector;
+    }
+    group {
+        color = "palegreen";
+        description = "forwarding to:\n-postgres\n-influx";
+        onprem_connector;
+    }
+
+    internet [shape = cloud];
+
+    network onprem_net {
+      prometheus;
+      ignition;
+      kafka;
+      onprem_connector [shape=node];
+    }
+}
+@enduml
+```
+
 The playbook invokes the following:
 
 1. Python dependencies are installed on the ansible host, defined in inventory.
