@@ -6,11 +6,11 @@
     mode: '0400'
   delegate_to: "{{ agilicus_sdk }}"
 - name: create forwarder 
-  add_connector:
+  add_forwarder:
     auth_doc: /tmp/authdoc.json
     customer: "{{ customer_name }}"
-    connector_name: "{{ inventory_hostname }}"
-    forwarding_connectors: "{{ forwarding_connectors | to_json }}"
+    to_connector: "{{ inventory_hostname }}"
+    from_connectors: "{{ from_connectors | to_json }}"
     port_offset: "{{ port_offset | default(0) }}"
     forwarder_bind_address: "{{ bind_address }}"
   delegate_to: "{{ agilicus_sdk }}"

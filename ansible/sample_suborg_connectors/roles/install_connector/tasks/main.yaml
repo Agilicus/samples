@@ -19,7 +19,7 @@
     mode: '0400'
 - name: fetch agilicus
   ansible.builtin.get_url:
-    url: https://agilicus.com/www/releases/secure-agent/latest/agilicus-agent
+    url: https://agilicus.com/www/releases/secure-agent/stable/agilicus-agent
     mode: '0770'
     dest: /tmp
 - name: retrieve connector

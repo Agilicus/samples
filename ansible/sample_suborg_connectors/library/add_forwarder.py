@@ -60,9 +60,8 @@ def run_module():
     module_args = dict(
         auth_doc=dict(type='str', required=True),
         customer=dict(type='str', required=True),
-        connector_name=dict(type='str', required=True),
-        networks=dict(type='str', required=False),
-        forwarding_connectors=dict(type='str', required=False),
+        to_connector=dict(type='str', required=True),
+        from_connectors=dict(type='str', required=True),
         forwarder_bind_address=dict(type='str', required=False),
         port_offset=dict(type='int', required=False),
     )
@@ -95,9 +94,8 @@ def run_module():
 
     name = module.params['customer']
     auth_doc = module.params['auth_doc']
-    connector_name = module.params['connector_name']
-    networks = module.params.get("networks")
-    forwarding_connectors = module.params.get("forwarding_connectors")
+    from_connectors = module.params.get("from_connectors")
+    to_connector = module.params.get("to_connector")
 
     auth_doc_obj = load_yaml(auth_doc)
     issuer = auth_doc_obj["spec"]["auth_issuer_url"]
@@ -119,43 +117,41 @@ def run_module():
     if not org:
         module.fail_json(msg=f'failed to find org {name}')
 
-    spec = agilicus.AgentConnectorSpec(
-        org_id=org["id"],
-        name=connector_name,
-        service_account_required=True,
-    )
-    connetor_model = agilicus.AgentConnector(spec=spec)
     final = {}
+    forwarders = final.setdefault("forwarders", [])
 
-    result = agilicus.create_or_update(
-        connetor_model,
-        lambda obj: api.connectors.create_agent_connector(obj),
-        lambda guid, obj: api.connectors.replace_agent_connector(guid, agent_connector=obj),
-    )
+    to_conn = get_connector(api, org["id"], to_connector)
 
-    connector = result[0]
+    for from_connector in json.loads(from_connectors):
+        conn = get_connector(api, org["id"], from_connector)
+        if not conn:
+            module.fail_json(msg=f'failed to find connector {from_connector}')
 
-    if networks:
-        for network in json.loads(networks):
+        for network in to_conn["status"]["application_services"]:
             kwargs = {}
-            if network.get("ipv4_address"):
-                kwargs["ipv4_addresses"] = network.get("ipv4_address")
-            kwargs["connector_id"] = connector["metadata"]["id"]
+            kwargs["bind_address"] = module.params.get("forwarder_bind_address")
+            if kwargs["bind_address"] is None:
+                kwargs["bind_address"] = "localhost"
 
-            service = agilicus.ApplicationService(
-                name=f'{connector["spec"]["name"]}-{network["name"]}',
+            port_offset = module.params.get("port_offset")
+            if port_offset is None:
+                port_offset = 0
+            spec = agilicus.ServiceForwarderSpec(
                 org_id=org["id"],
-                hostname=network["hostname"],
-                port=network["port"],
+                name=f"forwarder-{network['name']}",
+                port=network["port"] + int(port_offset),
+                connector_id=to_conn["metadata"]["id"],
+                application_service_id=network["id"],
                 **kwargs,
             )
-            agilicus.create_or_update(
-                service,
-                lambda obj: api.application_services.create_application_service(obj),
-                lambda guid, obj: api.application_services.replace_application_service(guid, application_service=obj),
+            forwarder = agilicus.ServiceForwarder(spec=spec)
+            result = agilicus.create_or_update(
+                forwarder,
+                lambda obj: api.application_services.create_service_forwarder(obj),
+                lambda guid, obj: api.application_services.replace_service_forwarder(guid, service_forwarder=obj),
             )
+            forwarders.append(result[0])
 
-    final = get_connector(api, org["id"], connector_name).to_dict()
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
     module.exit_json(**final)
