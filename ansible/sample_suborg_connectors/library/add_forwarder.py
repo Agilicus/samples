@@ -140,7 +140,7 @@ def run_module():
                 org_id=org["id"],
                 name=f"forwarder-{network['name']}",
                 port=network["port"] + int(port_offset),
-                connector_id=to_conn["metadata"]["id"],
+                connector_id=conn["metadata"]["id"],
                 application_service_id=network["id"],
                 **kwargs,
             )
