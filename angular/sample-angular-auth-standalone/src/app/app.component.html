@@ -1,0 +1,65 @@
+<div class="buttons-container">
+  <img alt="Agilicus Logo" src="{{bannerImage}}" width="300"><br>
+  <button *ngIf="info$ | async" type="button" mat-raised-button color="warn" class="logout-button"
+    (click)="onLogoutClick()" matTooltip="Click to logout" aria-label="A button for logging out">
+    Logout
+  </button>
+
+  <button *ngIf="(info$ | async) == (false || null || undefined)" type="button" mat-raised-button color="primary"
+    class="login-button" (click)="onLoginClick()" matTooltip="Click to login" aria-label="A button for logging in">
+    Login
+  </button>
+  <div *ngIf="(info$ | async) == (false || null || undefined)">
+    <hr>
+    During your sign-in you will be asked to prove your Identity from a set
+    of "Identity Providers" (e.g. Google, Apple, Microsoft).
+    <br>
+    This uses a protocol called OpenID Connect.
+    <br>No information is shared to this system other than
+    your name & email (called 'profile'). No permissions are granted.
+    <br>
+  </div>
+
+</div>
+
+<div class="app-container" *ngIf="info$ | async as info">
+  <h2>Decoded Information</h2>
+
+  <form class="user-form">
+    <mat-form-field class="user-form-full-width">
+      <label>Name</label>
+      <input matInput [readonly]="true" placeholder="Name" value="{{ info.user.name }}" />
+    </mat-form-field>
+
+    <mat-form-field class="user-form-full-width">
+      Email
+      <input matInput [readonly]="true" placeholder="Email" value="{{ info.user.email }}" />
+    </mat-form-field>
+
+    <mat-form-field class="user-form-full-width">
+      ID
+      <input matInput [readonly]="true" placeholder="User ID" value="{{ info.user.id }}" />
+    </mat-form-field>
+  </form>
+
+  <h2>Raw detail information</h2>
+
+  <mat-accordion>
+
+    <mat-expansion-panel hideToggle>
+      <mat-expansion-panel-header>
+        Raw Access Token
+      </mat-expansion-panel-header>
+      <p>This should be placed on all requests to your backend service.</p>
+      <input class="user-form-full-width" matInput [readonly]="true" placeholder="Email" value="{{ info.access_token }}" />
+    </mat-expansion-panel>
+
+    <mat-expansion-panel hideToggle>
+      <mat-expansion-panel-header>Raw ID Token</mat-expansion-panel-header>
+      <p>Generally this is never used.</p>
+      <input class="user-form-full-width" matInput [readonly]="true" placeholder="Email" value="{{ info.access_token }}" />
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
+</div>

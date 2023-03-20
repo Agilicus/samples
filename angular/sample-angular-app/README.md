@@ -5,7 +5,12 @@ documentation, etc.) is released under the
 [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0)
 
 1. Install Mongodb
-`sudo apt install -y mongodb mongodb-server-core`
+```
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+sudo apt update
+sudo apt install -y mongodb mongodb-server-core`
+```
 
 2. Build angular app
 ```
