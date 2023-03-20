@@ -5,8 +5,8 @@ localhost
 # set forwarder_port_offset to define port offset (default 10000), how to reach the services
 # on this device from cloud. Different offsets are required when forwarding from a single
 # host (cloud) to multiple on_prem devices, since the bind port must be unique
-192.168.122.36 forwarder_port_offset=10000 forwarder_bind_address=0.0.0.0
-192.168.122.214 forwarder_port_offset=20000 forwarder_bind_address=0.0.0.0
+192-168-122-36 ansible_host=192.168.122.36 forwarder_port_offset=10000 forwarder_bind_address=0.0.0.0
+192-168-122-214 ansible_host=192.168.122.214 forwarder_port_offset=20000 forwarder_bind_address=0.0.0.0
 [onprem:vars]
 #override default locations for services
 #prometheus_host=
@@ -16,7 +16,7 @@ localhost
 [cloud]
 # set forwarder_port_offset to define port offset (default 10000), how to reach the services
 # on this device from onprem.
-192.168.122.213
+192-168-122-213 ansible_host=192.168.122.213
 [cloud:vars]
 #override default locations for services
 #influx_host=
